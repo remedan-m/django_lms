@@ -107,12 +107,12 @@ class AdminRegisterView(generics.CreateAPIView):
 class MemberList(generics.ListCreateAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
-    #permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
 
 class MemberDetail(generics.RetrieveDestroyAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
-    #permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
 
