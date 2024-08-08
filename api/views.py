@@ -42,6 +42,20 @@ def getRoutes(request):
             'description': 'login out endpoint'
         },
 
+                {
+            'Endpoint:': 'token/refresh/',
+            'method': 'Post',
+            'title': None,
+            'description': 'endpoint to issue token refresh'
+        },
+
+        {
+            'Endpoint:': 'token/',
+            'method': 'Post',
+            'title': None,
+            'description': 'endpoint to issue a token'
+        },
+
         {
             'Endpoint:': '/members/',
             'method': 'GET',
