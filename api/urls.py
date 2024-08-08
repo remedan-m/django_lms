@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('members/register/', MemberRegisterView.as_view()),
     path('members/admin/register/', AdminRegisterView.as_view()),
+    
     path('members/', include('rest_framework.urls')),
 
     path('members/', MemberList.as_view()),

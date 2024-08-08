@@ -72,21 +72,7 @@ def getRoutes(request):
     ]
 
     return Response(routes)
-    
 
-'''
-@api_view(['POST'])
-def register(request):
-    if request.method == 'POST':
-        form = MemberRegisrationForm(request.POST)
-        if form.is_valid():
-            member = form.save()
-            login(request, member)
-            return redirect('/')
-    else:
-        form = MemberRegisrationForm()
-    return render(request, 'registration/register.html', {'form': form})
-'''
 
 class MemberRegisterView(generics.CreateAPIView):
     serializer_class = MemberRegisterSerializer
@@ -96,29 +82,37 @@ class MemberRegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        return Response(serializer.data,
+        status=status.HTTP_201_CREATED, headers=headers
+        )
 
 class AdminRegisterView(generics.CreateAPIView):
     serializer_class = AdminRegisterSerializer
+    permission_classes = [IsAdminUser]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    permission_classes = [IsAdminUser]
+        return Response(
+        serializer.data,
+        status=status.HTTP_201_CREATED, headers=headers
+        )
+
+    
 
 class MemberList(generics.ListCreateAPIView):
-    queryset = Member.memberobject.all()
+    queryset = Member.objects.all()
     serializer_class = MemberSerializer
-    permission_classes = [IsAdminUser]
+    #permission_classes = [IsAdminUser]
 
 
 class MemberDetail(generics.RetrieveDestroyAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
-    permission_classes = [IsAdminUser]
+    #permission_classes = [IsAdminUser]
 
 

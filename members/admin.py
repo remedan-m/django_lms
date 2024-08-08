@@ -23,7 +23,7 @@ class UserAdminConfig(UserAdmin):
         'is_active',
     )
     fieldsets = (
-                    (None, {'fields': ('email', 'id', 'username', 'first_name',)}),
+                    (None, {'fields': ('email', 'username', 'first_name',)}),
                     ('permissions', {'fields': ('is_staff', 'is_active',)}),
                      ('personal', {'fields': ('about', 'contact', 'address',)})
                      )

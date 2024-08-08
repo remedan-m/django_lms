@@ -13,8 +13,6 @@ class CustomAccountManager(BaseUserManager):
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_active', True)
 
-        # 
-
         # print(f"other fields before validation: {other_fields}")
 
         if other_fields.get('is_superuser') is not True:
@@ -24,9 +22,7 @@ class CustomAccountManager(BaseUserManager):
         if other_fields.get('is_staff') is not True:
             raise ValueError(
                 'superuser must be assigned to is_staff=True')
-        
-        
-
+   
         # print("creating super user with this fields: ")
         # print(f"email: {email}, username: {username}, first name: {first_name}, other fields: {other_fields}")
         
@@ -40,7 +36,7 @@ class CustomAccountManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email = email, username = username, first_name = first_name, contact = contact, address = address, **other_fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
 
@@ -56,7 +52,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
 
     objects = CustomAccountManager()
-    memberobject = CustomAccountManager()
+    #memberobject = CustomAccountManager()
 
     USERNAME_FIELD =  'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'contact', 'address']
