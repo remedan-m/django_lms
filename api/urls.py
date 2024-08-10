@@ -1,6 +1,6 @@
 from django.urls import path, include
 from . import views
-from .views import MemberList, MemberDetail, MemberRegisterView, AdminRegisterView, LogoutView
+from .views import MemberList, MemberDetail, MemberRegisterView, AdminRegisterView, LogoutView, RoutesView
 from members.models import Member
 from .serializers import MemberSerializer
 from rest_framework_simplejwt.views import (
@@ -10,7 +10,7 @@ from rest_framework_simplejwt.views import (
 
 
 urlpatterns = [
-    path('', views.getRoutes),
+    path('', RoutesView.as_view(), name='routes'),
 
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

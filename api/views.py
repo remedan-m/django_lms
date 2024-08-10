@@ -1,5 +1,6 @@
 from members.models import Member
 from .serializers import MemberSerializer, MemberRegisterSerializer, AdminRegisterSerializer
+from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -8,13 +9,11 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from members.models import Member
 
-
-
 # Create your views here.
 
-@api_view(['GET'])
-def getRoutes(request):
-    routes = [
+class RoutesView(APIView):
+    def get(self, request, *args, **kwargs):
+        routes = [
         {
             'Endpoint:': 'members/register/',
             'method': 'Post',
@@ -27,13 +26,6 @@ def getRoutes(request):
             'method': 'Post',
             'title': None,
             'description': 'signup endpoint for only admin members'
-        },
-
-        {
-            'Endpoint:': 'members/login/',
-            'method': 'Post',
-            'title': None,
-            'description': 'login endpoint'
         },
 
         {
@@ -71,8 +63,8 @@ def getRoutes(request):
             'description': 'reterns details of registered member'
         },
     ]
-
-    return Response(routes)
+        
+        return Response(routes)
 
 
 class MemberRegisterView(generics.CreateAPIView):
@@ -87,6 +79,7 @@ class MemberRegisterView(generics.CreateAPIView):
         return Response(serializer.data,
         status=status.HTTP_201_CREATED, headers=headers
         )
+
 
 class AdminRegisterView(generics.CreateAPIView):
     serializer_class = AdminRegisterSerializer
@@ -116,8 +109,7 @@ class LogoutView(generics.CreateAPIView):
             return Response({"detail": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    
+   
 
 class MemberList(generics.ListCreateAPIView):
     queryset = Member.objects.all()
