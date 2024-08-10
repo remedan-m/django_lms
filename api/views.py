@@ -4,7 +4,8 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 from members.models import Member
 
 
@@ -101,6 +102,20 @@ class AdminRegisterView(generics.CreateAPIView):
         serializer.data,
         status=status.HTTP_201_CREATED, headers=headers
         )
+
+
+class LogoutView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # Invalidate the refresh token
+
+            return Response({"detail": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     
 

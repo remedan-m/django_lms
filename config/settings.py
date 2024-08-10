@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'members',
     'api',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
 ]
 
@@ -125,10 +126,12 @@ CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:8000']
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-   'rest_framework.permissions.AllowAny',
+
+        'rest_framework.permissions.AllowAny',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 
