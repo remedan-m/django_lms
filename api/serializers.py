@@ -1,10 +1,13 @@
 from rest_framework import serializers
 from members.models import Member
+from django.contrib.auth.password_validation import validate_password
+
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
         fields = '__all__'
+
 
 class MemberRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -38,6 +41,7 @@ class MemberRegisterSerializer(serializers.ModelSerializer):
     
 
 class AdminRegisterSerializer(serializers.ModelSerializer):
+
     password = serializers.CharField(write_only=True)
     password1 = serializers.CharField(write_only=True)
 
@@ -66,3 +70,20 @@ class AdminRegisterSerializer(serializers.ModelSerializer):
         )
 
         return admin
+    
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password= serializers.CharField(required=True)
+    new_password= serializers.CharField(required=True, validators=[validate_password])
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+
+        if not user.check_password(value):
+            raise serializers.ValidationError('old password is nor correct.')
+        return value
+    
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+    

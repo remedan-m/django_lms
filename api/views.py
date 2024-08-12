@@ -1,13 +1,10 @@
 from members.models import Member
-from .serializers import MemberSerializer, MemberRegisterSerializer, AdminRegisterSerializer
+from .serializers import *
 from rest_framework.views import APIView
-from rest_framework import generics
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from members.models import Member
 
 # Create your views here.
 
@@ -15,35 +12,35 @@ class RoutesView(APIView):
     def get(self, request, *args, **kwargs):
         routes = [
         {
-            'Endpoint:': 'members/register/',
+            'Endpoint:': '/members/register/',
             'method': 'Post',
             'title': None,
             'description': 'signup endpoint for members'
         },
 
         {
-            'Endpoint:': 'members/admin/register/',
+            'Endpoint:': '/members/admin/register/',
             'method': 'Post',
             'title': None,
             'description': 'signup endpoint for only admin members'
         },
 
         {
-            'Endpoint:': 'members/logout/',
+            'Endpoint:': '/logout/',
             'method': 'POST',
             'title': None,
             'description': 'login out endpoint'
         },
 
                 {
-            'Endpoint:': 'token/refresh/',
+            'Endpoint:': '/token/',
             'method': 'Post',
             'title': None,
             'description': 'endpoint to issue token refresh'
         },
 
         {
-            'Endpoint:': 'token/',
+            'Endpoint:': '/token/refresh/',
             'method': 'Post',
             'title': None,
             'description': 'endpoint to issue a token'
@@ -61,6 +58,13 @@ class RoutesView(APIView):
             'method': 'GET',
             'title': None,
             'description': 'reterns details of registered member'
+        },
+
+        {
+            'Endpoint:': '/password-change/',
+            'method': 'PUT/PATCH',
+            'title': None,
+            'description': 'updates the password for the authenticated user(member)'
         },
     ]
         
@@ -123,3 +127,29 @@ class MemberDetail(generics.RetrieveDestroyAPIView):
     permission_classes = [IsAdminUser]
 
 
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    model = Member
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, queryset=None):
+        return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+
+            if not user.check_password(serializer.data.get('old_password')):
+                return Response({'old_password': 'wrong_password'}, status=400)
+            
+            user.set_password(serializer.data.get('new_password'))
+            user.save()
+
+            return Response({'details': 'Password updated successfully.'})
+        
+        return Response(serializer.errors, status=400)
+            
+
+        
