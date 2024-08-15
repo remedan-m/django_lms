@@ -200,7 +200,7 @@ EMAIL_USE_SSL = False  # If using SSL, set this to True and EMAIL_USE_TLS to Fal
 
 # Your email credentials
 EMAIL_HOST_USER = 'djangolms9@gmail.com'  # Your email address
-EMAIL_HOST_PASSWORD = 'ehpl mrqz aohi fnke'  # Your email password or app password
+EMAIL_HOST_PASSWORD = ''  # Your email password or app password
 
 # Default from email (used in Django's email functions)
 DEFAULT_FROM_EMAIL = 'djangolms9@gmail.com'
