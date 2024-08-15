@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -133,10 +134,19 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+
+     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'API service for a library system',
+    'DESCRIPTION': 'A online library system',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
@@ -177,3 +187,20 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+
+# Email Backend Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# SMTP Server Configuration
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail's SMTP server (you can change this to your SMTP server)
+EMAIL_PORT = 587  # For TLS (use 465 for SSL)
+EMAIL_USE_TLS = True  # Use TLS for secure connection (use EMAIL_USE_SSL for SSL)
+EMAIL_USE_SSL = False  # If using SSL, set this to True and EMAIL_USE_TLS to False
+
+# Your email credentials
+EMAIL_HOST_USER = 'djangolms9@gmail.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'ehpl mrqz aohi fnke '  # Your email password or app password
+
+# Default from email (used in Django's email functions)
+DEFAULT_FROM_EMAIL = 'djangolms9@gmail.com'

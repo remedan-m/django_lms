@@ -5,10 +5,16 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail, get_connection
+from django.urls import reverse
+
 
 # Create your views here.
 
-class RoutesView(APIView):
+'''class RoutesView(APIView):
     def get(self, request, *args, **kwargs):
         routes = [
         {
@@ -68,7 +74,7 @@ class RoutesView(APIView):
         },
     ]
         
-        return Response(routes)
+        return Response(routes)'''
 
 
 class MemberRegisterView(generics.CreateAPIView):
@@ -152,4 +158,37 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response(serializer.errors, status=400)
             
 
-        
+class RequestPasswordResetView(generics.GenericAPIView):
+    serializer_class = ResetPasswordEmailRequestSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+
+        user = Member.objects.get(email=email)
+        token = PasswordResetTokenGenerator().make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_link = f"{request.scheme}://{request.get_host()}/password-reset-confirm/{uid}/{token}/"
+
+        #connection = get_connection('django.core.mail.backends.console.EmailBackend')
+
+        send_mail(
+            'Password Reset Request',
+            f'Here is your password reset link: {reset_link}',
+            'from@example.com',
+            [email],
+            fail_silently=False,
+            #connection=connection
+            
+        )
+        return Response({"detail": "Password reset link sent."})
+
+
+class PasswordResetConfirmView(generics.UpdateAPIView):
+    serializer_class = SetNewPasswordSerializer
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'uidb64': kwargs['uidb64'], 'token': kwargs['token']})
+        serializer.is_valid(raise_exception=True)
+        return Response({"detail": "Password reset successfully."})

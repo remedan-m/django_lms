@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from members.models import Member
 from django.contrib.auth.password_validation import validate_password
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 
 class MemberSerializer(serializers.ModelSerializer):
@@ -87,3 +89,29 @@ class ChangePasswordSerializer(serializers.Serializer):
         validate_password(value)
         return value
     
+
+class ResetPasswordEmailRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(min_length =2)
+
+    def validate_email(self, value):
+        if not Member.objects.filter(email=value).exists():
+            raise serializers.ValidationError('This email is not registerd.')
+        
+        return value
+    
+class SetNewPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(write_only=True)
+
+    def validate(self, value):
+        try:
+            uidb64 = self.context['uidb64']
+            token = self.context['token']
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = Member.objects.get(pk=uid)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                raise serializers.ValidationError('Invalid or expired token.')
+            user.set_password(value['new_password'])
+            user.save()
+        except Member.DoesNotExist:
+            raise serializers.ValidationError('Invalid or expired token.')
+        return value
